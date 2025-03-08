@@ -10,6 +10,7 @@ const CalcDistance = () => {
     source: "",
     destination: ""
   });
+  // const [loading, setLoading] = useState(false);
 
   const handleDataChange = (e: any) => {
 
@@ -26,6 +27,9 @@ const CalcDistance = () => {
   const handleSubmitForm = async (e: any) => {
     e.preventDefault();
 
+    // setLoading(true);
+    setDistance("Calculating...")
+
     if (!formData.source) {
       alert("Please enter Source");
       return;
@@ -35,6 +39,8 @@ const CalcDistance = () => {
     }
 
     const apiRes: any = await sendRequest(formData);
+    // setLoading(false);
+
     if (apiRes.status === 200) {
 
       setFormData({
