@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from apps.main.views import fetchLocation
 from apps.main.views import serverHealth
+from apps.main.views import calcGeoDistance
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', serverHealth),
-    path('fetch-location/', fetchLocation),
+    path('fetch-location/', fetchLocation, name='fetchLocation'),
+    path('calc-geometric-distance/', calcGeoDistance, name='calcGeoDistance'),
 ]
