@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 
 @api_view(['GET'])
 def serverHealth(req):
-    return Response({"msg": "server up and running!"});
+    return Response({"msg": "server up and running!"})
 
 @api_view(['GET'])
 def fetchLocation(req):
