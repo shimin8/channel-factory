@@ -73,18 +73,21 @@ async def calcGeoDistanceAsync(req):
     try:
         source = req.data['source']
         req.data['location'] = source
-        sourceCoordinates = await fetchLocationAsync(req)
+        srcLocation = await fetchLocationAsync(req)
 
-        dest = req.data['destination']
-        req.data['location'] = dest
-        destCoordinates = await fetchLocationAsync(req)
+        destination = req.data['destination']
+        req.data['location'] = destination
+        destLocation = await fetchLocationAsync(req)
 
-        srcCd = (sourceCoordinates.data['data']['coordinates']['lat'], sourceCoordinates.data['data']['coordinates']['lng'])
-        destCd = (destCoordinates.data['data']['coordinates']['lat'], destCoordinates.data['data']['coordinates']['lng'])
+        srcCd = (srcLocation.data['data']['coordinates']['lat'], srcLocation.data['data']['coordinates']['lng'])
+        destCd = (destLocation.data['data']['coordinates']['lat'], destLocation.data['data']['coordinates']['lng'])
 
-        geoDist = geodesic(srcCd, destCd).kilometers
+        geoDist = round(geodesic(srcCd, destCd).kilometers, 2)
+        
+        src = srcLocation.data['data']['formattedAddress'],
+        dest = destLocation.data['data']['formattedAddress'],
 
-        return Response({ 'status': 200, 'data': geoDist })
+        return Response({ 'status': 200, 'src': src[0], 'dest': dest[0], 'distance': geoDist })
     
     except Exception as e:
         return Response({ 'error': f'Unexpected error: {str(e)}' }, status = 500)
