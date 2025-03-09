@@ -16,13 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from apps.main.views import fetchLocation
-from apps.main.views import serverHealth
-from apps.main.views import calcGeoDistance
+from apps.main.views import fetch_location
+from apps.main.views import server_health
+from apps.main.views import calc_geo_distance
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', serverHealth),
-    path('fetch-location/', fetchLocation, name='fetchLocation'),
-    path('calc-geometric-distance/', calcGeoDistance, name='calcGeoDistance'),
+    path('', server_health),
+    path('fetch-location/', fetch_location, name='fetchLocation'),
+    path('calc-geometric-distance/', calc_geo_distance, name='calcGeoDistance'),
 ]

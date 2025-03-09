@@ -5,13 +5,13 @@ from asgiref.sync import async_to_sync
 from .services import Service
 
 @api_view(['GET'])
-def serverHealth(req):
+def server_health(req):
     return Response({ 'msg': 'server up and running!'})
 
 @api_view(['POST'])
-def fetchLocation(req):
-    return async_to_sync(Service.fetchLocationAsync)(req)
+def fetch_location(req):
+    return async_to_sync(Service.fetch_location_async)(req)
 
 @api_view(['POST'])
-def calcGeoDistance(req):
-    return async_to_sync(Service.calcGeoDistanceAsync)(req)
+def calc_geo_distance(req):
+    return async_to_sync(Service.calc_geo_distance_async)(req)

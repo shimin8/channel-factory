@@ -9,16 +9,16 @@ import os
 import re
 
 class Service:
-    async def fetchLocationAsync(req):
+    async def fetch_location_async(req):
 
         # normalizing the address received in request body
-        normalizedAddress = Service.getNormalizedString(req.data['location'], '+')
+        normalized_address = Service.get_normalized_string(req.data['location'], '+')
 
-        if not normalizedAddress:
+        if not normalized_address:
             return Response({ 'status': 400, 'error': 'Something went wrong while Normalizing Address' })
         
         # fetch data from postgres database
-        results = await sync_to_async(list)(Location.objects.filter(normalized_address=normalizedAddress))
+        results = await sync_to_async(list)(Location.objects.filter(normalized_address=normalized_address))
 
         # if the normalized address is found in our postgres database, we return the result
         if results:
@@ -32,7 +32,7 @@ class Service:
             return Response({ 'status': 201, 'data': data[0] })
 
         # if data not found in database make the google maps api call
-        url = os.getenv('GMAPS_GEOCODE_URL') + 'geocode/json?address=' + normalizedAddress + '&key=' + os.getenv('GMAPS_API_KEY')
+        url = os.getenv('GMAPS_GEOCODE_URL') + 'geocode/json?address=' + normalized_address + '&key=' + os.getenv('GMAPS_API_KEY')
         headers = {
             'Accept': 'application/json',
         }
@@ -45,23 +45,23 @@ class Service:
                 resp = await client.get(url, headers = headers)
                 
                 resp.raise_for_status()
-                respJson = resp.json()
+                resp_json = resp.json()
 
-                returnResp = {
-                    'formattedAddress': respJson['results'][0]['formatted_address'],
-                    'coordinates': respJson['results'][0]['geometry']['location']
+                return_resp = {
+                    'formattedAddress': resp_json['results'][0]['formatted_address'],
+                    'coordinates': resp_json['results'][0]['geometry']['location']
                 }
 
                 # saving the new location in the postgres database for future reference
-                newLocation = Location(
-                    normalized_address=normalizedAddress,
-                    formatted_address=respJson['results'][0]['formatted_address'],
-                    lat=respJson['results'][0]['geometry']['location']['lat'],
-                    lng=respJson['results'][0]['geometry']['location']['lng']
+                new_location = Location(
+                    normalized_address=normalized_address,
+                    formatted_address=resp_json['results'][0]['formatted_address'],
+                    lat=resp_json['results'][0]['geometry']['location']['lat'],
+                    lng=resp_json['results'][0]['geometry']['location']['lng']
                 )
-                await sync_to_async(newLocation.save)()
+                await sync_to_async(new_location.save)()
 
-                return Response({ 'status': resp.status_code, 'data': returnResp })
+                return Response({ 'status': resp.status_code, 'data': return_resp })
 
             # handling all the exceptions
             except httpx.HTTPStatusError as e:
@@ -80,42 +80,42 @@ class Service:
                 return Response({ 'error': f'Unexpected error: {str(e)}' }, status = 500)
 
 
-    async def calcGeoDistanceAsync(req):
+    async def calc_geo_distance_async(req):
         try:
             source = req.data['source']
             req.data['location'] = source
-            srcLocation = await Service.fetchLocationAsync(req)
+            src_location = await Service.fetch_location_async(req)
 
             destination = req.data['destination']
             req.data['location'] = destination
-            destLocation = await Service.fetchLocationAsync(req)
+            dest_location = await Service.fetch_location_async(req)
 
-            srcCd = (srcLocation.data['data']['coordinates']['lat'], srcLocation.data['data']['coordinates']['lng'])
-            destCd = (destLocation.data['data']['coordinates']['lat'], destLocation.data['data']['coordinates']['lng'])
+            src_cd = (src_location.data['data']['coordinates']['lat'], src_location.data['data']['coordinates']['lng'])
+            dest_cd = (dest_location.data['data']['coordinates']['lat'], dest_location.data['data']['coordinates']['lng'])
 
-            geoDist = Service.calcGeoDistanceBetweenCoordinates(srcCd, destCd) ## custom distance calculation function
-            
+            geo_dist = Service.calc_geo_distance_between_coordinates(src_cd, dest_cd) ## custom distance calculation function
+
             ## for more accuracy
-            # geoDist = round(geodesic(srcCd, destCd).kilometers, 2)
+            # geo_dist = round(geodesic(src_cd, dest_cd).kilometers, 2)
 
-            src = srcLocation.data['data']['formattedAddress'],
-            dest = destLocation.data['data']['formattedAddress'],
+            src = src_location.data['data']['formattedAddress'],
+            dest = dest_location.data['data']['formattedAddress'],
 
-            return Response({ 'status': 200, 'src': src[0], 'dest': dest[0], 'distance': geoDist })
+            return Response({ 'status': 200, 'src': src[0], 'dest': dest[0], 'distance': geo_dist })
 
         except Exception as e:
             return Response({ 'error': f'Unexpected error: {str(e)}' }, status = 500)
 
 
-    def calcGeoDistanceBetweenCoordinates(src, dest):
+    def calc_geo_distance_between_coordinates(src, dest):
         try:
             
-            srcLat, srcLng, destLat, destLng = map(radians, [src[0], src[1], dest[0], dest[1]])
+            src_lat, src_lng, dest_lat, dest_lng = map(radians, [src[0], src[1], dest[0], dest[1]])
             
             # using the haversine formula here
-            diffLat = destLat - srcLat
-            diffLng = destLng - srcLng
-            a = sin(diffLat/2)**2 + cos(srcLat) * cos(destLat) * sin(diffLng/2)**2
+            diffLat = dest_lat - src_lat
+            diffLng = dest_lng - src_lng
+            a = sin(diffLat/2)**2 + cos(src_lat) * cos(dest_lat) * sin(diffLng/2)**2
             b = 2 * asin(sqrt(a))
             r = 6378 # radius of earth in kms at equator
             
@@ -125,7 +125,7 @@ class Service:
             return e
     
 
-    def getNormalizedString(str, ch):
+    def get_normalized_string(str, ch):
         str = str.lower()
         str = re.sub(r'[^\w\s]', '', str) # removing characters except any word or space characters
         str = re.sub(r'\s+', ch, str).strip() # replacing multiple space characters with the character passed (here '+')
