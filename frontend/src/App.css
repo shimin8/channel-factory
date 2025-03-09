@@ -19,7 +19,6 @@
 }
 
 .box {
-  border: 1px solid black;
   padding: 10px;
 }
 
@@ -28,13 +27,17 @@
 }
 
 .submit {
+  border: 1px solid white;
   height: 1%;
   padding: 5px;
 
 }
 
 .reset {
+  border: 1px solid black;
   float: left;
+  height: 1%;
+  padding: 5px;
 }
 
 @keyframes logo-spin {
