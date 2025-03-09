@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'apps'
+    'apps.main'
 ]
 
 MIDDLEWARE = [
@@ -85,8 +85,12 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mapsproject', # os.getenv('POSTGRES_PROJECT'),
+        'USER': 'user1', # os.getenv('POSTGRES_USER'),
+        'PASSWORD': 'password1', # os.getenv('POSTGRES_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

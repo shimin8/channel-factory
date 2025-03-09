@@ -41,7 +41,7 @@ const CalcDistance = () => {
     const apiRes: any = await sendRequest(formData);
     // setLoading(false);
 
-    if (apiRes.status === 200) {
+    if (apiRes && apiRes.status === 200) {
 
       setFormData({
         source: apiRes.data.src,
@@ -49,6 +49,8 @@ const CalcDistance = () => {
       })
       setDistance(apiRes.data.distance);
     } else {
+
+      setDistance("")
       alert("Something Went Wrong!!!");
       return;
     }
