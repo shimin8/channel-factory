@@ -2,6 +2,7 @@ import axios from "axios";
 import { C } from "../constants";
 import { useState } from "react"
 import { IformData } from "../interfaces";
+import '../App.css'
 
 const CalcDistance = () => {
 
@@ -30,11 +31,9 @@ const CalcDistance = () => {
     // setLoading(true);
     setDistance("Calculating...")
 
-    if (!formData.source) {
-      alert("Please enter Source");
-      return;
-    } else if (!formData.destination) {
-      alert("Please enter Destination");
+    if (!formData.source || !formData.destination) {
+      alert("Source and Destination are mandatory fields!");
+      setDistance("")
       return;
     }
 
@@ -47,7 +46,7 @@ const CalcDistance = () => {
         source: apiRes.data.src,
         destination: apiRes.data.dest
       })
-      setDistance(apiRes.data.distance);
+      setDistance(apiRes.data.distance + " kms.");
     } else {
 
       setDistance("")
@@ -77,10 +76,18 @@ const CalcDistance = () => {
     }
   }
 
+  const handleResetForm = () => {
+    setFormData({
+      source: "",
+      destination: ""
+    });
+    setDistance("");
+  }
+
   return (
     <div>
-      <div>
-        <label>Source* : </label>
+      <div className="box">
+        <label className="label">Source* : </label>
         <input
           type="text"
           name="source"
@@ -90,8 +97,8 @@ const CalcDistance = () => {
           size={formData.source.length}
         />
       </div>
-      <div>
-        <label>Destination* : </label>
+      <div className="box">
+        <label className="label">Destination* : </label>
         <input
           type="text"
           name="destination"
@@ -101,8 +108,8 @@ const CalcDistance = () => {
           size={formData.destination.length}
         />
       </div>
-      <div>
-        <button onClick={handleSubmitForm}>Calculate Distance!</button>
+      <div className="box">
+      <label className="label">Geometric Distance : </label>
         <input
           readOnly
           type="text"
@@ -110,7 +117,10 @@ const CalcDistance = () => {
           placeholder="Distance"
           value={distance}
         />
-        kilometers
+        <button className="submit" onClick={handleSubmitForm}>Go!</button>
+      </div>
+      <div>
+        <button className="reset" onClick={handleResetForm}>Reset</button>
       </div>
     </div>
   );

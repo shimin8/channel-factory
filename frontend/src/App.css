@@ -18,6 +18,25 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.box {
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.label {
+  padding-right: 10px;
+}
+
+.submit {
+  height: 1%;
+  padding: 5px;
+
+}
+
+.reset {
+  float: left;
+}
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
