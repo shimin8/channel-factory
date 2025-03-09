@@ -2,6 +2,7 @@ from rest_framework.response import Response
 from asgiref.sync import sync_to_async
 from geopy.distance import geodesic
 from .models import Location
+from math import radians, cos, sin, asin, sqrt
 
 import httpx
 import os
@@ -92,7 +93,10 @@ class Service:
             srcCd = (srcLocation.data['data']['coordinates']['lat'], srcLocation.data['data']['coordinates']['lng'])
             destCd = (destLocation.data['data']['coordinates']['lat'], destLocation.data['data']['coordinates']['lng'])
 
-            geoDist = round(geodesic(srcCd, destCd).kilometers, 2)
+            geoDist = Service.calcGeoDistanceBetweenCoordinates(srcCd, destCd) ## custom distance calculation function
+            
+            ## for more accuracy
+            # geoDist = round(geodesic(srcCd, destCd).kilometers, 2)
 
             src = srcLocation.data['data']['formattedAddress'],
             dest = destLocation.data['data']['formattedAddress'],
@@ -102,6 +106,24 @@ class Service:
         except Exception as e:
             return Response({ 'error': f'Unexpected error: {str(e)}' }, status = 500)
 
+
+    def calcGeoDistanceBetweenCoordinates(src, dest):
+        try:
+            
+            srcLat, srcLng, destLat, destLng = map(radians, [src[0], src[1], dest[0], dest[1]])
+            
+            # using the haversine formula here
+            diffLat = destLat - srcLat
+            diffLng = destLng - srcLng
+            a = sin(diffLat/2)**2 + cos(srcLat) * cos(destLat) * sin(diffLng/2)**2
+            b = 2 * asin(sqrt(a))
+            r = 6378 # radius of earth in kms at equator
+            
+            return round(b * r, 2)
+
+        except Exception as e:
+            return e
+    
 
     def getNormalizedString(str, ch):
         str = str.lower()

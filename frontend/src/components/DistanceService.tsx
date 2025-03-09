@@ -117,8 +117,8 @@ const CalcDistance = () => {
           placeholder="Distance"
           value={distance}
         />
-        <button className="submit" onClick={handleSubmitForm}>Go!</button>
       </div>
+      <button className="submit" onClick={handleSubmitForm}>Go!</button>
       <div>
         <button className="reset" onClick={handleResetForm}>Reset</button>
       </div>
