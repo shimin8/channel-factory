@@ -39,21 +39,33 @@ It allows user to enter the source and destination address and the user can see 
    ```bash
    ctrl+shift+T
    ```
-   To run the backend service:
+   To run the backend service (assuming python is installed):
    ```bash
    cd backend
+   python -m venv env
    source backend/env/bin/activate
+   pip install -r requirements.txt
+   python manage.py migrate
    python manage.py runserver
    ```
 
    To run the frontend service:
-   ```bash
-   cd frontend
-   npm i
-   nvm install v18.20.7
-   nvm use 18.20.7
-   npm run dev
-   ```
+      To install npm, nodejs, cURL and nvm
+      ```bash
+      cd frontend
+      sudo apt install nodejs npm -y
+      sudo apt install curl -y
+      curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+      source ~/.bashrc
+      ```
+
+      To install the 
+      ```bash
+      npm install
+      nvm install v18.20.7
+      nvm use 18.20.7
+      npm run dev
+      ```
 
 ---
 
@@ -150,10 +162,3 @@ this endpoint takes a single location and returns the formatted/actual address o
 
    ```
 ---
-
-## **Dependencies**
-
-- **PostgresSQL**: For Postgres interactions.
-- **Axios**: For HTTP requests (frontend).
-- **httpx**: For HTTP requests (backend).
-- **dotenv**: For managing environment variables.
